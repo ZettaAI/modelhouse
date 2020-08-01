@@ -29,12 +29,27 @@ def uncached_load_model(path, **params):
     if len(files_and_contents) == 0:
         raise Exception(f"No model found at {path}")
     put_files_and_contents(tmp_dir_path, files_and_contents)
-    creator_path = os.path.join(tmp_dir_path, "create.py")
-    creator = import_file("create", creator_path)
-    model = creator.create(**params)
+    model = load_local_model(tmp_dir_path, **params)
     #shutil.rmtree(tmp_dir_path)
     return model
 
 def uncached_load_model_str(path, params):
     params = json.loads(params)
     return uncached_load_model(path, **params)
+
+def local_load_model(path, **params):
+    """Load model from local directory
+
+    Args:
+        path: absolute path to modelhouse dir
+        params: kwargs for PATH/create.py:create
+
+    Returns:
+       output of create(**params) 
+    """
+    creator_path = os.path.join(path, "create.py")
+    creator = import_file("create", creator_path)
+    model = creator.create(**params)
+    return model
+
+
